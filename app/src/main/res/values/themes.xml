@@ -1,0 +1,28 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.AM_lecture" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#FF9800</item>
+        <item name="colorPrimaryVariant">#C1940C</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#FFAB30</item>
+        <item name="colorSecondaryVariant">#FFEB3B</item>
+        <item name="colorOnSecondary">#FAF2E7</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.AM_lecture.Fullscreen" parent="Theme.AM_lecture">
+        <item name="android:actionBarStyle">@style/Widget.Theme.AM_lecture.ActionBar.Fullscreen
+        </item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="ThemeOverlay.AM_lecture.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">#FFB13E</item>
+        <item name="fullscreenTextColor">#FFC269</item>
+    </style>
+</resources>
