@@ -43,12 +43,11 @@ class ListFragment : Fragment() {
         lvItems.adapter = adapter
         lvItems.setOnItemClickListener(OnItemClickListener { parent, view, position, id ->
             var fm : FragmentManager? = getActivity()?.getSupportFragmentManager()
+            val bundle = Bundle()
+            bundle.putInt("position",position)
             var secondFragment = DetailFragment()
-            val ft = fm
-                ?.beginTransaction()
-                ?.replace(R.id.flContainer, secondFragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            secondFragment.arguments = bundle
+            fm?.beginTransaction()?.replace(R.id.flContainer, secondFragment)?.addToBackStack(null)?.commit()
         })
 
     }

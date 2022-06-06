@@ -94,7 +94,7 @@ class DetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             if (arguments != null) {
-                position = arguments!!.getInt("position", 0)
+                position = requireArguments().getInt("position", 0)
             }
         }
     }
