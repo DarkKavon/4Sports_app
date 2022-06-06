@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:choiceMode="singleChoice"
-        android:listSelector="#F3E5BB"
+        android:listSelector="#FDF0C9"
         />
 
 </LinearLayout>

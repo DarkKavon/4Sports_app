@@ -1,13 +1,16 @@
 package com.example.am_lecture
 
+import android.animation.ObjectAnimator
 import androidx.appcompat.app.AppCompatActivity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.TRANSLATION_Y
 import android.view.WindowInsets
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -23,6 +26,10 @@ class FullscreenActivity : AppCompatActivity() {
     private lateinit var fullscreenContent: TextView
     private lateinit var fullscreenContentControls: LinearLayout
     private val hideHandler = Handler()
+
+    private var mRocket: View? = null
+    private var mFrameLayout: View? = null
+    private var mScreenHeight = 0f
 
     @SuppressLint("InlinedApi")
     private val hidePart2Runnable = Runnable {
@@ -90,9 +97,11 @@ class FullscreenActivity : AppCompatActivity() {
         // while interacting with the UI.
         binding.dummyButton.setOnTouchListener(delayHideTouchListener)
 
+
+
         val thread = Thread(){
             run{
-                Thread.sleep(1500)
+                Thread.sleep(2500)
             }
             runOnUiThread() {
                     val intent = Intent(this, MainActivity::class.java)
@@ -103,12 +112,32 @@ class FullscreenActivity : AppCompatActivity() {
         thread.start()
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            val displaymetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displaymetrics)
+            mScreenHeight = displaymetrics.heightPixels.toFloat()
+            mRocket = findViewById(R.id.rocket)
+            mFrameLayout = findViewById(R.id.container)
+            println("YEY!")
+            onStartAnimation()
+        }
+    }
+
+    private fun onStartAnimation() {
+        val objectAnimator = ObjectAnimator.ofFloat(mRocket, TRANSLATION_Y, 200f, -mScreenHeight-200)
+        objectAnimator.duration = 2500L
+        objectAnimator.start()
+    }
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
+
         delayedHide(100)
     }
 
@@ -175,4 +204,7 @@ class FullscreenActivity : AppCompatActivity() {
          */
         private const val UI_ANIMATION_DELAY = 300
     }
+
+
+
 }
