@@ -286,6 +286,14 @@ class StopwatchFragment : Fragment() {
             initTime = 0
             setInitTime()
         }
+        else if (stopwatchWork == 0 && startPos != posId){
+            stopwatchStart.isEnabled = true
+            stopwatchSave.isEnabled = false
+            stopwatchStop.isEnabled = false
+            initTime = 0
+            setInitTime()
+            formatTime(0)
+        }
         else {
             stopwatchStart.isEnabled = true
             stopwatchSave.isEnabled = false

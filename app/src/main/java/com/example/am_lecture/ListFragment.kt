@@ -1,6 +1,6 @@
 package com.example.am_lecture
 
-import android.content.Intent
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -35,8 +35,10 @@ class ListFragment : Fragment() {
     }
 
 
+    @SuppressLint("UseRequireInsteadOfGet")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        shared = getActivity()?.getSharedPreferences("com.example.fragmentapp.shared",0)!!
         lvItems = getView()?.findViewById<ListView>(R.id.lvItems) as ListView
         var items = Route.routeNames
         val adapter = ArrayAdapter(requireActivity(),android.R.layout.simple_list_item_1,items)
@@ -45,6 +47,8 @@ class ListFragment : Fragment() {
             var fm : FragmentManager? = getActivity()?.getSupportFragmentManager()
             val bundle = Bundle()
             bundle.putInt("position",position)
+            posId = position
+            setPosition()
             var secondFragment = DetailFragment()
             secondFragment.arguments = bundle
             fm?.beginTransaction()?.replace(R.id.flContainer, secondFragment)?.addToBackStack(null)?.commit()
