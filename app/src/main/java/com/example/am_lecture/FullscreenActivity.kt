@@ -92,7 +92,7 @@ class FullscreenActivity : AppCompatActivity() {
 
         val thread = Thread(){
             run{
-                Thread.sleep(3000)
+                Thread.sleep(1500)
             }
             runOnUiThread() {
                     val intent = Intent(this, MainActivity::class.java)
