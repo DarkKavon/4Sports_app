@@ -18,8 +18,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text=""
-                tools:text="This is sample title"
+                android:text="Sport"
                 android:id="@+id/tvTitle"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
@@ -29,43 +28,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text=""
-                tools:text="This is sample detail. This is sample detail. This is sample detail. This is sample detail."
+                android:text="Use this app"
                 android:id="@+id/tvDetails"
                 android:layout_below="@+id/lastTime"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:gravity="center"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="00:00:00"
-                android:id="@+id/bestTime"
-                android:layout_below="@+id/tvTitle"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:gravity="center"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="00:00:00"
-                android:id="@+id/lastTime"
-                android:layout_below="@+id/bestTime"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:gravity="center"/>
 
             <FrameLayout
                 android:id="@+id/stopwatch_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/tvDetails"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp" />
+            <Button
+                android:id="@+id/logout_btn"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="7dp"
+                android:text="LOGOUT" />
         </LinearLayout>
     </ScrollView>
 

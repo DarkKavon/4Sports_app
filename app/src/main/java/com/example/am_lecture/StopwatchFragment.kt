@@ -16,16 +16,16 @@ class StopwatchFragment : Fragment() {
     private var milisFuture : Long = 10000000
     private var initTime : Int = 0
     private var currTime : Int = 0
-    private var startPos : Int = 0
     private var timeToSave : Int = 0
-    private var posId : Int = 0
-    private  var stopwatchWork : Int = 0
     private lateinit var stopwatchTextView : TextView
     private lateinit var stopwatchStart : Button
     private lateinit var stopwatchStop : Button
     private lateinit var  stopwatchSave : Button
+    private lateinit var  stopwatchReset : Button
     private lateinit var shared : SharedPreferences
     private lateinit var dbhelper : DBHelper
+    private var username : String = ""
+    private var userId : Int = 0
 
     private val stoper : CountDownTimer = object: CountDownTimer(milisFuture,1000){
         override fun onFinish() {
@@ -192,9 +192,6 @@ class StopwatchFragment : Fragment() {
         timeToSave = shared.getInt("t2s", 0)
     }
 
-    private fun getPosition() {
-        posId = shared.getInt("posId", 0)
-    }
 
     fun setInitTime() {
         val edit = shared.edit()
@@ -206,25 +203,7 @@ class StopwatchFragment : Fragment() {
         initTime = shared.getInt("initTime", 0)
     }
 
-    private fun setStartPos() {
-        val edit = shared.edit()
-        edit.putInt("startPos", startPos)
-        edit.apply()
-    }
 
-    private fun getStartPos() {
-        startPos = shared.getInt("startPos", -1)
-    }
-
-    private fun setStopwatchWork() {
-        val edit = shared.edit()
-        edit.putInt("stwWork", stopwatchWork)
-        edit.apply()
-    }
-
-    private fun getStopwatchWork() {
-        stopwatchWork = shared.getInt("stwWork", 0)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -233,90 +212,56 @@ class StopwatchFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_stopwatch, container, false)
     }
 
+    private fun getUser() {
+        username = shared.getString("username", "").toString()
+        userId = shared.getInt("userId",0)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dbhelper = activity?.let { DBHelper(it) }!!
         shared = requireActivity().getSharedPreferences("com.example.fragmentapp.shared",0)
-        getStopwatchWork()
-        getPosition()
-        getStartPos()
+        getUser()
         stopwatchTextView = requireView().findViewById(R.id.stopwatch) as TextView
         stopwatchStart = requireView().findViewById(R.id.stopwatch_start) as Button
         stopwatchStop = requireView().findViewById(R.id.stopwatch_stop) as Button
         stopwatchSave = requireView().findViewById(R.id.stopwatch_save) as Button
+        stopwatchReset = requireView().findViewById(R.id.stopwatch_reset) as Button
         stopwatchStop.isEnabled = false
         stopwatchSave.isEnabled = false
         stopwatchStart.isEnabled = true
-        println("$stopwatchWork $startPos $posId")
-        if (startPos == -1) {
-            stopwatchStart.isEnabled = true
-            stopwatchSave.isEnabled = false
-            stopwatchStop.isEnabled = false
-            formatTime(0)
-        }
-        else if (stopwatchWork == 1 && startPos == posId) {
-            getInitTime()
-            stoper.start()
-            stopwatchStart.isEnabled = false
-            stopwatchSave.isEnabled = false
-            stopwatchStop.isEnabled = true
-        }
-        else if (stopwatchWork == 1 && startPos != posId) {
-            stopwatchStart.isEnabled = false
-            stopwatchSave.isEnabled = false
-            stopwatchStop.isEnabled = false
-            formatTime(0)
-        }
-        else if (stopwatchWork == 0 && startPos == posId) {
-            stopwatchStart.isEnabled = true
-            stopwatchSave.isEnabled = true
-            stopwatchStop.isEnabled = false
-            getT2S()
-            formatTime(timeToSave)
-            initTime = 0
-            setInitTime()
-        }
-        else if (stopwatchWork == 0 && startPos != posId){
-            stopwatchStart.isEnabled = true
-            stopwatchSave.isEnabled = false
-            stopwatchStop.isEnabled = false
-            initTime = 0
-            setInitTime()
-            formatTime(0)
-        }
-        else {
-            stopwatchStart.isEnabled = true
-            stopwatchSave.isEnabled = false
-            stopwatchStop.isEnabled = false
-            formatTime(0)
-        }
+        stopwatchReset.isEnabled = false
+
 
         stopwatchStart.setOnClickListener {
             getInitTime()
-            getPosition()
-            startPos = posId
-            setStartPos()
             stoper.start()
             stopwatchStart.isEnabled = false
             stopwatchSave.isEnabled = false
             stopwatchStop.isEnabled = true
-            stopwatchWork = 1
-            setStopwatchWork()
+            stopwatchReset.isEnabled = false
         }
         stopwatchStop.setOnClickListener {
             stoper.cancel()
             stopwatchStart.isEnabled = true
             stopwatchSave.isEnabled = true
             stopwatchStop.isEnabled = false
+            stopwatchReset.isEnabled = true
             timeToSave = currTime
-            currTime = 0
-            stopwatchWork = 0
-            setStopwatchWork()
             setT2S()
             setInitTime()
         }
+        stopwatchReset.setOnClickListener() {
+            currTime = 0
+            timeToSave = 0
+            setT2S()
+            setInitTime()
+            formatTime(0)
+            stopwatchReset.isEnabled = false
+        }
         stopwatchSave.setOnClickListener {
-            dbhelper.addResult(posId,timeToSave)
+            dbhelper.addResult(timeToSave,0,userId)
+            stopwatchSave.isEnabled = false
         }
     }
 

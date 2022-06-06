@@ -1,22 +1,23 @@
 package com.example.am_lecture
 
-import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 
+class ActivityActivity : AppCompatActivity() {
 
-class DetailFragment : Fragment() {
-    var position = 0
-    var tvTitle: TextView? = null
-    var tvDetails: TextView? = null
-    var bestTime : TextView? = null
-    var lastTime : TextView? = null
+
     lateinit var dbhelper: DBHelper
+    private lateinit var shared : SharedPreferences
+    private var username : String = ""
 
     fun formatTime2String(currTime : Int) : String {
         if (currTime < 60) {
@@ -92,38 +93,37 @@ class DetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            if (arguments != null) {
-                position = requireArguments().getInt("position", 0)
-            }
+        setContentView(R.layout.activity_activity)
+        shared = getSharedPreferences("com.example.fragmentapp.shared",0)
+        getUser()
+        val logout_btn = findViewById(R.id.logout_btn) as Button
+        logout_btn.setOnClickListener() {
+            username = ""
+            setUser()
+            Toast.makeText(applicationContext, "Logout successful!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            this.finish()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        parent: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_detail, parent, false)
+    private fun setUser() {
+        val edit = shared.edit()
+        edit.putString("username", username)
+        edit.apply()
     }
 
-    @SuppressLint("UseRequireInsteadOfGet")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        dbhelper = getActivity()?.let { DBHelper(it) }!!
-        tvTitle = view.findViewById(R.id.tvTitle) as TextView
-        tvDetails = view.findViewById(R.id.tvDetails) as TextView
-        bestTime = view.findViewById(R.id.bestTime) as TextView
-        lastTime = view.findViewById(R.id.lastTime) as TextView
-
-        tvTitle!!.text = Route.routeNames[position]
-        tvDetails!!.text = Route.routeDetails[position]
-        bestTime!!.text = "Best time: "+formatTime2String(dbhelper.selectBestTime(position))+" "+dbhelper.selectBestDate(position)
-        lastTime!!.text = "Last time: "+formatTime2String(dbhelper.selectLastTime(position))+" "+dbhelper.selectLastDate(position)
-
-        val stopwatchFragment = StopwatchFragment() as Fragment
-        val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
-        transaction.replace(R.id.stopwatch_container, stopwatchFragment).commit()
+    private fun getUser() {
+        username = shared.getString("username", "").toString()
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+                dbhelper = DBHelper(this)
+                val stopwatchFragment = StopwatchFragment() as Fragment
+                supportFragmentManager.beginTransaction().replace(R.id.stopwatch_container, stopwatchFragment).commit()
+
+        }
+    }
 }
-

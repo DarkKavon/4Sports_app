@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AM_lecture">
         <activity
+            android:name=".ActivityActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity

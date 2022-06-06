@@ -14,6 +14,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var dbhelper: DBHelper
     private lateinit var shared : SharedPreferences
     private var username : String = ""
+    private var userId : Int = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,13 +22,15 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         shared = getSharedPreferences("com.example.fragmentapp.shared",0)
         dbhelper = DBHelper(this)
+        dbhelper.cleartable()
+        dbhelper.makeTable()
         val editLogin = findViewById(R.id.editTextUsername) as EditText
         val editPassword = findViewById(R.id.editTextPassword) as EditText
         val loginBtn = findViewById(R.id.login_btn) as Button
 
         getUser()
         if (username != "") {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, ActivityActivity::class.java)
             startActivity(intent)
             this.finish()
         }
@@ -40,8 +43,9 @@ class LoginActivity : AppCompatActivity() {
                     editLogin.text.clear()
                     editPassword.text.clear()
                     Toast.makeText(applicationContext, "Login successful!", Toast.LENGTH_SHORT).show()
+                    userId = dbhelper.selectUserId(username)
                     setUser()
-                    val intent = Intent(this, MainActivity::class.java)
+                    val intent = Intent(this, ActivityActivity::class.java)
                     startActivity(intent)
                     this.finish()
                 }
@@ -53,10 +57,11 @@ class LoginActivity : AppCompatActivity() {
             else {
                 dbhelper.addUser(username,passwd)
                 Toast.makeText(applicationContext, "Your account is created!", Toast.LENGTH_SHORT).show()
+                userId = dbhelper.selectUserId(username)
                 setUser()
                 editLogin.text.clear()
                 editPassword.text.clear()
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, ActivityActivity::class.java)
                 startActivity(intent)
                 this.finish()
             }
@@ -66,11 +71,14 @@ class LoginActivity : AppCompatActivity() {
     private fun setUser() {
         val edit = shared.edit()
         edit.putString("username", username)
+        edit.putInt("userId", userId)
         edit.apply()
     }
 
     private fun getUser() {
         username = shared.getString("username", "").toString()
+        userId = shared.getInt("userId",0)
     }
+
 
 }
