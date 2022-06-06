@@ -18,7 +18,6 @@ class ListFragment : Fragment() {
     private lateinit var lvItems: ListView
     lateinit var shared : SharedPreferences
     private var posId : Int = 0
-    private var listener: AdapterView.OnItemSelectedListener? = null
 
     fun setPosition() {
         val edit = shared.edit()

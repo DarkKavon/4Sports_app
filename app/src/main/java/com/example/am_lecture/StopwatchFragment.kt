@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 
 class StopwatchFragment : Fragment() {
-    private var mListener: OnFragmentInteractionListener? = null
     private var milisFuture : Long = 10000000
     private var initTime : Int = 0
     private var currTime : Int = 0
@@ -234,15 +233,6 @@ class StopwatchFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_stopwatch, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mListener = if (context is OnFragmentInteractionListener) {
-            context
-        } else {
-            mListener
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dbhelper = activity?.let { DBHelper(it) }!!
@@ -330,92 +320,4 @@ class StopwatchFragment : Fragment() {
         }
     }
 
-//    override fun (view: View?, savedInstanceState: Bundle?) {
-//        super.onViewCreated(requireView(), savedInstanceState)
-//        dbhelper = activity?.let { DBHelper(it) }!!
-//        shared = requireActivity().getSharedPreferences("com.example.fragmentapp.shared",0)
-//        getStopwatchWork()
-//        getPosition()
-//        getStartPos()
-//        stopwatchTextView = requireView().findViewById(R.id.stopwatch) as TextView
-//        stopwatchStart = requireView().findViewById(R.id.stopwatch_start) as Button
-//        stopwatchStop = requireView().findViewById(R.id.stopwatch_stop) as Button
-//        stopwatchSave = requireView().findViewById(R.id.stopwatch_save) as Button
-//        stopwatchStop.isEnabled = false
-//        stopwatchSave.isEnabled = false
-//        stopwatchStart.isEnabled = true
-//        println("$stopwatchWork $startPos $posId")
-//        if (startPos == -1) {
-//            stopwatchStart.isEnabled = true
-//            stopwatchSave.isEnabled = false
-//            stopwatchStop.isEnabled = false
-//            formatTime(0)
-//        }
-//        else if (stopwatchWork == 1 && startPos == posId) {
-//            getInitTime()
-//            stoper.start()
-//            stopwatchStart.isEnabled = false
-//            stopwatchSave.isEnabled = false
-//            stopwatchStop.isEnabled = true
-//        }
-//        else if (stopwatchWork == 1 && startPos != posId) {
-//            stopwatchStart.isEnabled = false
-//            stopwatchSave.isEnabled = false
-//            stopwatchStop.isEnabled = false
-//            formatTime(0)
-//        }
-//        else if (stopwatchWork == 0 && startPos == posId) {
-//            stopwatchStart.isEnabled = true
-//            stopwatchSave.isEnabled = true
-//            stopwatchStop.isEnabled = false
-//            getT2S()
-//            formatTime(timeToSave)
-//            initTime = 0
-//            setInitTime()
-//        }
-//        else {
-//            stopwatchStart.isEnabled = true
-//            stopwatchSave.isEnabled = false
-//            stopwatchStop.isEnabled = false
-//            formatTime(0)
-//        }
-//
-//        stopwatchStart.setOnClickListener {
-//            getInitTime()
-//            getPosition()
-//            startPos = posId
-//            setStartPos()
-//            stoper.start()
-//            stopwatchStart.isEnabled = false
-//            stopwatchSave.isEnabled = false
-//            stopwatchStop.isEnabled = true
-//            stopwatchWork = 1
-//            setStopwatchWork()
-//        }
-//        stopwatchStop.setOnClickListener {
-//            stoper.cancel()
-//            stopwatchStart.isEnabled = true
-//            stopwatchSave.isEnabled = true
-//            stopwatchStop.isEnabled = false
-//            timeToSave = currTime
-//            currTime = 0
-//            stopwatchWork = 0
-//            setStopwatchWork()
-//            setT2S()
-//            setInitTime()
-//        }
-//        stopwatchSave.setOnClickListener {
-//            dbhelper.addResult(posId,timeToSave)
-//        }
-//    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
-
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-//        fun messageFromChildFragment(uri: Uri?)
-    }
 }
