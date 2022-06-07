@@ -1,59 +1,65 @@
 package com.example.am_lecture
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.location.Location
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import org.json.JSONObject
-import java.util.jar.Manifest
 
-class ActivityActivity : AppCompatActivity() {
+class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    var weather_url = ""
-    var api_id = "d179ae0e16fe4cceb2130cb51520c687"
+    private var weather_api_key = "d179ae0e16fe4cceb2130cb51520c687"
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
     private lateinit var locationManager: LocationManager
-
     lateinit var dbhelper: DBHelper
-    private lateinit var shared : SharedPreferences
-    private var username : String = ""
+    private lateinit var shared: SharedPreferences
+    private var username: String = ""
+    private lateinit var mapFragment: SupportMapFragment
+    private lateinit var mMap: GoogleMap
+    private var latt: Double = 0.0
+    private var long: Double = 0.0
+    private var city: String = ""
+    private var temp: String = ""
+    private lateinit var weather_text: TextView
+    private lateinit var currMarkerOptions: MarkerOptions
+    private lateinit var currMarker: Marker
+    private var zoomLevel: Float = 15.0f //This goes up to 21
 
-    private var latt : Double = 0.0
-    private var long : Double = 0.0
-    private var city : String = ""
-    private var temp : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_activity)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        shared = getSharedPreferences("com.example.fragmentapp.shared",0)
+        shared = getSharedPreferences("com.example.fragmentapp.shared", 0)
         getUser()
         getLocation()
+
+        mapFragment =
+            (supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment)!!
+        mapFragment?.getMapAsync(this)
+
         val logout_btn = findViewById(R.id.logout_btn) as Button
-        val update_weather_btn = findViewById(R.id.update_weather) as Button
-        val weather_text = findViewById(R.id.weather) as TextView
+        weather_text = findViewById(R.id.weather) as TextView
         logout_btn.setOnClickListener() {
             username = ""
             setUser()
@@ -61,17 +67,6 @@ class ActivityActivity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             this.finish()
-        }
-        update_weather_btn.setOnClickListener() {
-            getTemp()
-            if (temp == "" || city == "")
-            {
-                weather_text.text = "Click update weather"
-            }
-            else {
-                weather_text.text = "Now it's "+temp+"°C in "+city
-            }
-
         }
     }
 
@@ -88,9 +83,10 @@ class ActivityActivity : AppCompatActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-                dbhelper = DBHelper(this)
-                val stopwatchFragment = StopwatchFragment() as Fragment
-                supportFragmentManager.beginTransaction().replace(R.id.stopwatch_container, stopwatchFragment).commit()
+            dbhelper = DBHelper(this)
+            val stopwatchFragment = StopwatchFragment() as Fragment
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.stopwatch_container, stopwatchFragment).commit()
         }
     }
 
@@ -104,10 +100,16 @@ class ActivityActivity : AppCompatActivity() {
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Toast.makeText(applicationContext, "Location permission needed!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Location permission needed!", Toast.LENGTH_SHORT)
+                .show()
             return
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000L, 0f, locationListener)
+        locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER,
+            5000L,
+            0f,
+            locationListener
+        )
     }
 
     private val locationListener =
@@ -115,11 +117,19 @@ class ActivityActivity : AppCompatActivity() {
             println(location)
             latt = location.latitude
             long = location.longitude
+            updateMap(mMap)
+            getTemp()
+            if (temp == "" || city == "") {
+                weather_text.text = "Click update weather"
+            } else {
+                weather_text.text = "Now it's " + temp + "°C in " + city
+            }
         }
 
     fun getTemp() {
         val queue = Volley.newRequestQueue(this)
-        val url: String = "https://api.weatherbit.io/v2.0/current?" + "lat=" + latt + "&lon=" + long + "&key=" + api_id
+        val url: String =
+            "https://api.weatherbit.io/v2.0/current?" + "lat=" + latt + "&lon=" + long + "&key=" + weather_api_key
         println("lat " + url)
 
         val stringReq = StringRequest(
@@ -143,5 +153,26 @@ class ActivityActivity : AppCompatActivity() {
             Response.ErrorListener { println("That didn't work!") })
         queue.add(stringReq)
     }
+
+    override fun onMapReady(p0: GoogleMap) {
+        mMap = p0
+        val pos = LatLng(latt, long)
+        currMarkerOptions = MarkerOptions().position(pos).title("Marker in " + city)
+        currMarker = p0.addMarker(currMarkerOptions)!!
+//        p0.moveCamera(CameraUpdateFactory.newLatLng(pos))
+        p0.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoomLevel));
+    }
+
+    private fun updateMap(p0: GoogleMap) {
+        val pos = LatLng(latt, long)
+        currMarker.remove()
+        currMarkerOptions = MarkerOptions().position(pos).title("Marker in " + city)
+        currMarker = p0.addMarker(currMarkerOptions)!!
+//        p0.moveCamera(CameraUpdateFactory.newLatLng(pos))
+        p0.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoomLevel));
+    }
 }
+
+
+
 

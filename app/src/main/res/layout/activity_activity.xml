@@ -22,19 +22,32 @@
                 android:id="@+id/tvTitle"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="30dp"/>
+                android:layout_marginTop="10dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Click update weather"
+                android:text="Wait for weather update"
                 android:id="@+id/weather"
                 android:layout_below="@+id/lastTime"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:gravity="center"/>
 
+            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                tools:context=".ActivityActivity">
+
+                <fragment
+                    class="com.google.android.gms.maps.SupportMapFragment"
+                    android:id="@+id/map_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/stopwatch_container"
@@ -42,13 +55,6 @@
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp" />
-
-            <Button
-                android:id="@+id/update_weather"
-                android:layout_width="240dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="5dp"
-                android:text="UPDATE WEATHER" />
 
             <Button
                 android:id="@+id/logout_btn"
