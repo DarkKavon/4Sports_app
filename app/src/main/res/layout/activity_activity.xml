@@ -28,8 +28,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Use this app"
-                android:id="@+id/tvDetails"
+                android:text="Click update weather"
+                android:id="@+id/weather"
                 android:layout_below="@+id/lastTime"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
@@ -42,11 +42,19 @@
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp" />
+
+            <Button
+                android:id="@+id/update_weather"
+                android:layout_width="240dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="5dp"
+                android:text="UPDATE WEATHER" />
+
             <Button
                 android:id="@+id/logout_btn"
-                android:layout_width="120dp"
+                android:layout_width="240dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="5dp"
                 android:text="LOGOUT" />
         </LinearLayout>
     </ScrollView>
