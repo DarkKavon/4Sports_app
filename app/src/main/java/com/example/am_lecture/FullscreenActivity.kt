@@ -117,7 +117,6 @@ class FullscreenActivity : AppCompatActivity() {
             mScreenHeight = displaymetrics.heightPixels.toFloat()
             mRocket = findViewById(R.id.rocket)
             mFrameLayout = findViewById(R.id.container)
-            println("YEY!")
             onStartAnimation()
         }
     }
