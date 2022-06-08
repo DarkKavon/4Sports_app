@@ -22,8 +22,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         shared = getSharedPreferences("com.example.fragmentapp.shared",0)
         dbhelper = DBHelper(this)
-        dbhelper.cleartable()
-        dbhelper.makeTable()
         val editLogin = findViewById(R.id.editTextUsername) as EditText
         val editPassword = findViewById(R.id.editTextPassword) as EditText
         val loginBtn = findViewById(R.id.login_btn) as Button

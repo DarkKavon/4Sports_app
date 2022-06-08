@@ -8,12 +8,14 @@ import android.text.Editable
 import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class DBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
     null, DATABASE_VER) {
     companion object {
         private val DATABASE_VER = 2
         private val DATABASE_NAME = "runnerapp.db"
+
         //Table
         private val TABLE_NAME_RES = "results"
         private val COL_ID_RES = "Id"
@@ -27,9 +29,12 @@ class DBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         private val COL_USER_NAME = "user_name"
         private val COL_PASSWD = "password"
     }
+
     override fun onCreate(db: SQLiteDatabase?) {
-        val CREATE_TABLE_QUERY = ("CREATE TABLE $TABLE_NAME_RES ($COL_ID_RES INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USER_ID INTEGER, $COL_DISTANCE INTEGER, $COL_TIME INT, $COL_DATE TEXT)")
-        val CREATE_TABLE_QUERY_2 = ("CREATE TABLE $TABLE_NAME_USER ($COL_ID_USR INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USER_NAME TEXT, $COL_PASSWD TEXT)")
+        val CREATE_TABLE_QUERY =
+            ("CREATE TABLE $TABLE_NAME_RES ($COL_ID_RES INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USER_ID INTEGER, $COL_DISTANCE INTEGER, $COL_TIME INT, $COL_DATE TEXT)")
+        val CREATE_TABLE_QUERY_2 =
+            ("CREATE TABLE $TABLE_NAME_USER ($COL_ID_USR INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USER_NAME TEXT, $COL_PASSWD TEXT)")
         db!!.execSQL(CREATE_TABLE_QUERY)
         db!!.execSQL(CREATE_TABLE_QUERY_2)
     }
@@ -41,20 +46,20 @@ class DBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
     }
 
 
-    fun clear() {
-        this.writableDatabase.execSQL("DELETE FROM $TABLE_NAME_RES")
-    }
+//    fun clear() {
+//        this.writableDatabase.execSQL("DELETE FROM $TABLE_NAME_RES")
+//    }
+//
+//    fun cleartable() {
+//        this.writableDatabase.execSQL("DROP TABLE $TABLE_NAME_RES")
+//    }
+//
+//    fun makeTable() {
+//        this.writableDatabase.execSQL("CREATE TABLE $TABLE_NAME_RES ($COL_ID_RES INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USER_ID INTEGER, $COL_DISTANCE REAL, $COL_TIME INT, $COL_DATE TEXT)")
+//    }
 
-    fun cleartable() {
-        this.writableDatabase.execSQL("DROP TABLE $TABLE_NAME_RES")
-    }
-
-    fun makeTable() {
-        this.writableDatabase.execSQL("CREATE TABLE $TABLE_NAME_RES ($COL_ID_RES INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USER_ID INTEGER, $COL_DISTANCE REAL, $COL_TIME INT, $COL_DATE TEXT)")
-    }
-
-    fun addResult(time : Int, distance : Double, userid : Int){
-        val db= this.writableDatabase
+    fun addResult(time: Int, distance: Double, userid: Int) {
+        val db = this.writableDatabase
         val values = ContentValues()
         values.put(COL_TIME, time)
         values.put(COL_USER_ID, userid)
@@ -66,7 +71,7 @@ class DBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         db.close()
     }
 
-    fun selectUserId(username: String) : Int {
+    fun selectUserId(username: String): Int {
         val selectQuery =
             "SELECT * FROM $TABLE_NAME_USER WHERE $COL_USER_NAME = '$username'"
         val db = this.writableDatabase
@@ -74,19 +79,19 @@ class DBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         if (cursor.moveToFirst()) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID_USR))
         }
-        return  0
+        return 0
     }
 
-    fun addUser(username : String, password : String) {
+    fun addUser(username: String, password: String) {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COL_USER_NAME, username)
         values.put(COL_PASSWD, password)
-        db.insert(TABLE_NAME_USER,null,values)
+        db.insert(TABLE_NAME_USER, null, values)
         db.close()
     }
 
-    fun checkIfUserExists(username: String) : Int {
+    fun checkIfUserExists(username: String): Int {
         val selectQuery =
             "SELECT * FROM $TABLE_NAME_USER WHERE $COL_USER_NAME = '$username'"
         val db = this.writableDatabase
@@ -94,10 +99,10 @@ class DBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         if (cursor.moveToFirst()) {
             return 1
         }
-        return  0
+        return 0
     }
 
-    fun checkPassword(username : String, password: String) : Int {
+    fun checkPassword(username: String, password: String): Int {
         val selectQuery =
             "SELECT * FROM $TABLE_NAME_USER WHERE $COL_USER_NAME = '$username' and $COL_PASSWD = '$password'"
         val db = this.writableDatabase
@@ -105,7 +110,29 @@ class DBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         if (cursor.moveToFirst()) {
             return 1
         }
-        return  0
+        return 0
+    }
+
+    fun selectUserActivities(userId: Int): ArrayList<Activity> {
+        val acts = ArrayList<Activity>()
+        val selectQuery =
+            "SELECT * FROM $TABLE_NAME_RES WHERE $COL_USER_ID = '$userId' ORDER BY $COL_ID_RES DESC"
+        val db = this.writableDatabase
+        val cursor = db.rawQuery(selectQuery, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val message = Activity()
+                message.userId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_USER_ID))
+                message.id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID_RES))
+                message.distance = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_DISTANCE))
+                message.time = cursor.getInt(cursor.getColumnIndexOrThrow(COL_TIME))
+                message.date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
+
+                acts.add(message)
+            } while (cursor.moveToNext())
+            return acts
+        }
+        return acts
     }
 
 }

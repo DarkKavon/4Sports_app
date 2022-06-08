@@ -27,9 +27,9 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import org.json.JSONObject
+import java.lang.Thread.sleep
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import kotlin.math.round
 
 class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -66,6 +66,7 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var  stopwatchSave : Button
     private lateinit var  stopwatchReset : Button
     private lateinit var distanceTextView : TextView
+    private lateinit var history_btn : Button
 
 
     private val stoper : CountDownTimer = object: CountDownTimer(milisFuture,1000){
@@ -249,8 +250,19 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
         shared = getSharedPreferences("com.example.fragmentapp.shared", 0)
         getUser()
         getLocation()
+        currTime = 0
+        setInitTime()
 
-
+        val thread = Thread(){
+            run{
+                while (true) {
+                    getTemp()
+                    sleep(120000L)
+                }
+            }
+            runOnUiThread() {}
+        }
+        thread.start()
 
         mapFragment =
             (supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment)!!
@@ -273,10 +285,12 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
         stopwatchSave = findViewById(R.id.stopwatch_save) as Button
         stopwatchReset = findViewById(R.id.stopwatch_reset) as Button
         distanceTextView = findViewById(R.id.distnace) as TextView
+        history_btn = findViewById(R.id.history_btn) as Button
         stopwatchStop.isEnabled = false
         stopwatchSave.isEnabled = false
-        stopwatchStart.isEnabled = true
+        stopwatchStart.isEnabled = false
         stopwatchReset.isEnabled = false
+        history_btn.isEnabled = true
 
         stopwatchStart.setOnClickListener {
             recordActivity = 1
@@ -286,6 +300,7 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
             stopwatchSave.isEnabled = false
             stopwatchStop.isEnabled = true
             stopwatchReset.isEnabled = false
+            history_btn.isEnabled = false
         }
         stopwatchStop.setOnClickListener {
             recordActivity = 0
@@ -294,6 +309,7 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
             stopwatchSave.isEnabled = true
             stopwatchStop.isEnabled = false
             stopwatchReset.isEnabled = true
+            history_btn.isEnabled = true
             timeToSave = currTime
             setT2S()
             setInitTime()
@@ -321,6 +337,11 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
             formatTime(0)
             stopwatchReset.isEnabled = false
             stopwatchSave.isEnabled = false
+        }
+        history_btn.setOnClickListener() {
+            val intent = Intent(this, RankingActivity::class.java)
+            startActivity(intent)
+            this.finish()
         }
     }
 
@@ -364,7 +385,6 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
             latt = location.latitude
             long = location.longitude
             updateMap(mMap)
-            getTemp()
             if (temp != "" && city != "") {
                 weather_text.text = "Now it's $temp°C in $city"
             }
@@ -407,6 +427,9 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //DRAW HERE
         if (oldLoc != LatLng(0.0,0.0)) {
+            if (recordActivity == 0) {
+                stopwatchStart.isEnabled = true
+            }
             if (recordActivity == 1) {
                 drawPrimaryLinePath()
                 sumDistance += calcDistance(oldLoc,newLoc)
@@ -453,9 +476,6 @@ class ActivityActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun rad2deg(rad: Double): Double {
         return rad * 180.0 / Math.PI
     }
-
-
-
 
 }
 
