@@ -22,7 +22,7 @@
                 android:id="@+id/tvTitle"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="7dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
                 android:id="@+id/weather"
                 android:layout_below="@+id/lastTime"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="7dp"
                 android:gravity="center"/>
 
             <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -49,12 +49,55 @@
 
             </FrameLayout>
 
-            <FrameLayout
-                android:id="@+id/stopwatch_container"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp" />
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/stopwatch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="0:00:00"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                <TextView
+                    android:id="@+id/distnace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="0km"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <Button
+                    android:id="@+id/stopwatch_start"
+                    android:layout_width="240dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="3dp"
+                    android:text="START" />
+
+                <Button
+                    android:id="@+id/stopwatch_stop"
+                    android:layout_width="240dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    android:text="PASUE" />
+
+                <Button
+                    android:id="@+id/stopwatch_reset"
+                    android:layout_width="240dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    android:text="RESET" />
+
+                <Button
+                    android:id="@+id/stopwatch_save"
+                    android:layout_width="240dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    android:text="SAVE" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/logout_btn"

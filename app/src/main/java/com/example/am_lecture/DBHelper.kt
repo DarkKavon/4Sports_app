@@ -50,10 +50,10 @@ class DBHelper(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
     }
 
     fun makeTable() {
-        this.writableDatabase.execSQL("CREATE TABLE $TABLE_NAME_RES ($COL_ID_RES INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USER_ID INTEGER, $COL_DISTANCE INTEGER, $COL_TIME INT, $COL_DATE TEXT)")
+        this.writableDatabase.execSQL("CREATE TABLE $TABLE_NAME_RES ($COL_ID_RES INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USER_ID INTEGER, $COL_DISTANCE REAL, $COL_TIME INT, $COL_DATE TEXT)")
     }
 
-    fun addResult(time : Int, distance : Int, userid : Int){
+    fun addResult(time : Int, distance : Double, userid : Int){
         val db= this.writableDatabase
         val values = ContentValues()
         values.put(COL_TIME, time)
